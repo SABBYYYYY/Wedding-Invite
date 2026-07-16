@@ -1,0 +1,1729 @@
+/* ============================================================
+   Sherly & Prajwal — Wedding Invitation
+   Milestone 1: Opening interaction only
+   ============================================================ */
+
+:root {
+  --ivory: #faf8f4;
+  --paper: #fcf7ec;
+  --champagne: #f2e8d7;
+  --champagne-deep: #e9dac0;
+  --gold: #c8a96a;
+  --gold-soft: #d9c093;
+  --gold-line: rgba(200, 169, 106, 0.55);
+  --charcoal: #2c2c2c;
+  --charcoal-soft: rgba(44, 44, 44, 0.68);
+  --wax: #7c2a2e;
+  --wax-deep: #5e1f23;
+  --wax-highlight: #9b3a3e;
+
+  --env-w: clamp(258px, 76vw, 336px);
+  --env-h: calc(var(--env-w) * 0.63);
+  --card-w: clamp(252px, 80vw, 326px);
+  --card-h: clamp(50%, 140vw, 560px);
+  --ease-lux: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--ivory);
+  background-image:
+    radial-gradient(
+      circle at 50% 18%,
+      rgba(200, 169, 106, 0.07),
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 50% 100%,
+      rgba(200, 169, 106, 0.05),
+      transparent 60%
+    );
+  color: var(--charcoal);
+  font-family: "Cormorant Garamond", serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------------------------------------------------------- */
+/* Stage                                                       */
+/* ---------------------------------------------------------- */
+
+.stage {
+  position: relative;
+  min-height: 100svh;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8vh 6vw;
+}
+
+.prelude {
+  position: absolute;
+  top: 12vh;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--charcoal-soft);
+  opacity: 0.85;
+  transition: opacity 0.6s var(--ease-soft);
+  animation: breathe 3.2s ease-in-out infinite;
+}
+
+.prelude.is-hidden {
+  opacity: 0;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+.scene {
+  position: relative;
+  width: var(--env-w);
+  height: var(--env-h);
+  transition: transform 1.6s var(--ease-soft);
+}
+
+.scene.is-close {
+  transform: scale(1.045);
+}
+
+/* ---------------------------------------------------------- */
+/* Envelope                                                     */
+/* ---------------------------------------------------------- */
+
+.envelope {
+  position: absolute;
+  inset: 0;
+  perspective: 1400px;
+  transition: opacity 1s var(--ease-soft);
+}
+
+.envelope.is-fading .env-back,
+.envelope.is-fading .env-pocket-front,
+.envelope.is-fading .env-pocket-left,
+.envelope.is-fading .env-pocket-right,
+.envelope.is-fading .env-flap,
+.envelope.is-fading .wax-seal,
+.envelope.is-fading .envelope-shadow {
+  opacity: 0;
+}
+
+.env-flap.is-behind {
+  z-index: -1;
+}
+
+.envelope-shadow {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: -7%;
+  height: 22px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(44, 44, 44, 0.16),
+    transparent 72%
+  );
+  filter: blur(2px);
+  transition: opacity 1s var(--ease-soft);
+  z-index: 0;
+}
+
+.envelope.is-fading .envelope-shadow {
+  opacity: 0;
+}
+
+/* back panel — inner lining visible once flap opens */
+.env-back {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    155deg,
+    var(--champagne) 0%,
+    var(--paper) 55%,
+    var(--champagne) 100%
+  );
+  border: 1px solid var(--gold-line);
+  border-radius: 3px;
+  box-shadow:
+    0 18px 40px -18px rgba(44, 44, 44, 0.28),
+    0 4px 14px -6px rgba(44, 44, 44, 0.18);
+  z-index: 1;
+}
+
+/* clipping cavity that reveals the card sliding out */
+.cavity {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0% 0% 0% 0%);
+  transition: clip-path 1.35s var(--ease-lux);
+  z-index: 2;
+  border-radius: 3px;
+  overflow: visible;
+}
+
+.cavity.is-open {
+  clip-path: inset(-190% -6% -120% -6%);
+}
+
+/* the invitation card, tucked inside the envelope at rest */
+.card {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: var(--card-w);
+  height: var(--card-h);
+  transform: translate(-50%, 0);
+  transition: transform 1.35s var(--ease-lux);
+  background: var(--paper);
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(200, 169, 106, 0.025) 0px,
+    rgba(200, 169, 106, 0.025) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  border: 1px solid var(--gold-line);
+  border-radius: 2px;
+  box-shadow:
+    0 30px 60px -22px rgba(44, 44, 44, 0.28),
+    0 2px 0 rgba(255, 255, 255, 0.5) inset;
+}
+
+.prelude.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.card.is-risen {
+  transform: translate(-50%, calc((var(--env-h) - var(--card-h)) / 2));
+}
+.card.is-centered {
+  transform: translate(-50%, 30%);
+}
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  border: 1px solid var(--gold-line);
+  border-radius: 1px;
+  pointer-events: none;
+}
+
+.card-inner {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: clamp(22px, 6vw, 32px) clamp(20px, 6vw, 28px);
+  gap: 8px;
+}
+
+.card-eyebrow {
+  margin: 0 0 4px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--charcoal-soft);
+}
+
+.card-names {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.card-names .name {
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(34px, 9.6vw, 42px);
+  line-height: 1.15;
+  color: var(--charcoal);
+  letter-spacing: 0.01em;
+}
+
+.lineage {
+  margin: 2px 0 0;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 400;
+  font-size: 13.5px;
+  line-height: 1.55;
+  letter-spacing: 0.02em;
+  color: var(--charcoal-soft);
+}
+
+.card-glyph {
+  font-size: 13px;
+  color: var(--gold);
+  margin: 2px 0;
+  opacity: 0.9;
+}
+
+.card-divider {
+  width: 46px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 10px 0 8px;
+}
+
+.card-body {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.65;
+  font-style: italic;
+  color: var(--charcoal-soft);
+}
+
+.card-date {
+  margin: 12px 0 2px;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 600;
+  font-size: clamp(17px, 4.6vw, 19px);
+  letter-spacing: 0.06em;
+  color: var(--charcoal);
+}
+
+.card-date sup {
+  font-size: 0.6em;
+  letter-spacing: 0;
+}
+
+.card-venue {
+  margin: 6px 0 0;
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--charcoal-soft);
+  line-height: 1.9;
+}
+
+/* ---------------------------------------------------------- */
+/* Pocket (front lower panel of the envelope)                  */
+/* ---------------------------------------------------------- */
+
+.env-pocket-left,
+.env-pocket-right,
+.env-pocket-front {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  transition: opacity 0.5s var(--ease-soft);
+}
+
+.env-pocket-front {
+  background: linear-gradient(
+    165deg,
+    var(--champagne-deep) 0%,
+    var(--champagne) 60%,
+    var(--paper) 100%
+  );
+  clip-path: polygon(0% 0%, 50% 50%, 100% 0%, 100% 100%, 0% 100%);
+  border-bottom: 1px solid var(--gold-line);
+}
+
+/* .env-pocket-left {
+  background: linear-gradient(120deg, var(--champagne) 0%, var(--champagne-deep) 100%);
+  clip-path: polygon(0% 100%, 0% 30%, 50% 58%, 50% 100%);
+  opacity: 0.55;
+} */
+
+/* .env-pocket-right {
+  background: linear-gradient(240deg, var(--champagne) 0%, var(--champagne-deep) 100%);
+  clip-path: polygon(100% 100%, 100% 30%, 50% 58%, 50% 100%);
+  opacity: 0.55;
+} */
+
+.envelope.is-fading .env-pocket-left,
+.envelope.is-fading .env-pocket-right,
+.envelope.is-fading .env-pocket-front {
+  opacity: 0;
+}
+
+/* seam lines for the pocket, purely decorative */
+.env-pocket-front::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(0% 100%, 0% 34%, 50% 58%, 100% 34%, 100% 100%);
+  box-shadow: inset 0 0 0 1px rgba(200, 169, 106, 0.35);
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------- */
+/* Flap (top, opens upward)                                     */
+/* ---------------------------------------------------------- */
+
+.env-flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 56%;
+  z-index: 4;
+  transform-origin: 50% 0%;
+  transform-style: preserve-3d;
+  transition:
+    transform 1.15s var(--ease-lux),
+    opacity 0.6s ease 0.9s;
+  clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+}
+
+.env-flap.is-open {
+  transform: rotateX(-172deg);
+}
+
+.envelope.is-fading .env-flap {
+  opacity: 0;
+}
+
+.flap-texture {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    165deg,
+    var(--paper) 0%,
+    var(--champagne) 65%,
+    var(--champagne-deep) 100%
+  );
+  box-shadow: inset 0 0 0 1px rgba(200, 169, 106, 0.4);
+  backface-visibility: hidden;
+}
+
+.flap-texture::after {
+  /* inner lining shown briefly as the flap rotates past 90deg */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--champagne-deep);
+  transform: rotateY(180deg);
+  backface-visibility: hidden;
+}
+
+/* ---------------------------------------------------------- */
+/* Wax seal — the only interactive element                     */
+/* ---------------------------------------------------------- */
+
+.wax-seal {
+  --seal-size: clamp(52px, 15vw, 62px);
+  position: absolute;
+  top: 43%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--seal-size);
+  height: var(--seal-size);
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  z-index: 6;
+  background: radial-gradient(
+    circle at 32% 28%,
+    var(--wax-highlight) 0%,
+    var(--wax) 46%,
+    var(--wax-deep) 100%
+  );
+  box-shadow:
+    0 10px 18px -8px rgba(44, 44, 44, 0.45),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.25),
+    inset 0 2px 3px rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 0.5s var(--ease-lux),
+    opacity 0.5s var(--ease-lux) 0.05s,
+    box-shadow 0.4s ease;
+  outline-offset: 4px;
+}
+
+.wax-seal:hover {
+  transform: translate(-50%, -50%) scale(1.045);
+}
+
+.wax-seal:focus-visible {
+  outline: 2px solid var(--gold);
+}
+
+.wax-seal:active {
+  transform: translate(-50%, -50%) scale(0.97);
+}
+
+.seal-monogram {
+  font-family: "Great Vibes", cursive;
+  font-size: calc(var(--seal-size) * 0.44);
+  color: rgba(250, 244, 232, 0.92);
+  transform: translateY(-1px);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+}
+
+.seal-crack {
+  position: absolute;
+  background: rgba(20, 8, 8, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  border-radius: 1px;
+}
+
+.seal-crack-1 {
+  width: 2px;
+  height: 42%;
+  top: 8%;
+  left: 46%;
+  transform: rotate(18deg);
+}
+
+.seal-crack-2 {
+  width: 2px;
+  height: 34%;
+  top: 30%;
+  left: 30%;
+  transform: rotate(-32deg);
+}
+
+.seal-crack-3 {
+  width: 2px;
+  height: 30%;
+  top: 34%;
+  left: 62%;
+  transform: rotate(38deg);
+}
+
+.wax-seal.is-cracking .seal-crack {
+  animation: crackIn 0.35s var(--ease-lux) forwards;
+}
+
+.wax-seal.is-cracking .seal-crack-2 {
+  animation-delay: 0.05s;
+}
+.wax-seal.is-cracking .seal-crack-3 {
+  animation-delay: 0.09s;
+}
+
+@keyframes crackIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.wax-seal.is-breaking {
+  animation: sealBreak 0.62s var(--ease-lux) forwards;
+  pointer-events: none;
+}
+
+@keyframes sealBreak {
+  0% {
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  35% {
+    transform: translate(-50%, -50%) scale(1.06) rotate(-2deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-58%, -20%) scale(0.55) rotate(-16deg);
+    opacity: 0;
+  }
+}
+
+/* ---------------------------------------------------------- */
+/* Reduced motion                                               */
+/* ---------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .scene,
+  .envelope,
+  .envelope-shadow,
+  .cavity,
+  .card,
+  .env-flap,
+  .wax-seal,
+  .prelude {
+    transition-duration: 0.001s !important;
+    animation-duration: 0.001s !important;
+  }
+}
+
+/* ---------------------------------------------------------- */
+/* Larger viewports — graceful scale, no redesign               */
+/* ---------------------------------------------------------- */
+
+@media (min-width: 720px) {
+  :root {
+    --env-w: 360px;
+    --card-w: 344px;
+    --card-h: 486px;
+  }
+}
+
+/* ============================================================
+   Landing → Story Transition — NEW
+   Scroll lock, swipe-up cue, cinematic zoom, Our Story section
+   ============================================================ */
+
+html.scroll-lock,
+body.scroll-lock {
+  overflow: hidden;
+  height: 100%;
+  overscroll-behavior: none;
+}
+
+/* Stage becomes fixed so the Our Story section can sit beneath it
+   in normal document flow, ready to be revealed after the zoom. */
+.stage {
+  position: fixed;
+  inset: 0;
+  transition: opacity 1s var(--ease-soft);
+  z-index: 10;
+}
+
+.stage.is-away {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Card grows relative to the whole scene during the zoom, so the
+   scaling is applied to the scene itself (transform is GPU-friendly). */
+.scene.is-zooming {
+  transform: scale(20);
+  transition: transform 1.8s var(--ease-lux);
+}
+
+/* ---------------------------------------------------------- */
+/* Swipe-up cue                                                */
+/* ---------------------------------------------------------- */
+
+.scroll-cue {
+  position: absolute;
+  left: 50%;
+  bottom: 6vh;
+  transform: translateX(-50%);
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--charcoal-soft);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 15;
+  transition: opacity 1.1s var(--ease-soft);
+}
+
+.scroll-cue.is-visible {
+  opacity: 0.85;
+  animation: cuePulse 2.4s ease-in-out infinite;
+}
+
+.scroll-cue.is-hidden {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+@keyframes cuePulse {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translateX(-50%) translateY(-6px);
+    opacity: 0.95;
+  }
+}
+
+/* ---------------------------------------------------------- */
+/* Zoom overlay — bridges the card zoom into the story section */
+/* ---------------------------------------------------------- */
+
+.zoom-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--paper);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 20;
+  transition: opacity 1.4s ease;
+}
+
+.scene.is-zooming ~ .zoom-overlay {
+  opacity: 1;
+  transition: opacity 0.6s ease 0.7s;
+}
+
+/* ---------------------------------------------------------- */
+/* Our Story section                                            */
+/* ---------------------------------------------------------- */
+
+.story-section {
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--paper);
+  opacity: 0;
+  transition: opacity 1.6s var(--ease-soft);
+  padding: 10vh 7vw;
+}
+
+.story-section.is-visible {
+  opacity: 1;
+}
+
+.story-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 3px;
+}
+
+.story-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.story-heading {
+  margin: 0;
+  font-family: "Great Vibes", cursive;
+  font-weight: 400;
+  font-size: clamp(40px, 11vw, 58px);
+  color: var(--charcoal);
+  letter-spacing: 0.01em;
+}
+
+.story-divider {
+  width: 74px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 22px 0 40px;
+}
+
+.story-image-placeholder {
+  width: 100%;
+  max-width: 480px;
+  aspect-ratio: 4 / 3;
+  background: linear-gradient(
+    155deg,
+    var(--champagne) 0%,
+    var(--paper) 55%,
+    var(--champagne) 100%
+  );
+  border: 1px solid var(--gold-line);
+  border-radius: 3px;
+  box-shadow: 0 20px 50px -22px rgba(44, 44, 44, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.story-image-placeholder-label {
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--charcoal-soft);
+  opacity: 0.6;
+}
+
+.story-paragraph {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(16px, 4vw, 19px);
+  line-height: 1.85;
+  color: var(--charcoal-soft);
+  max-width: 540px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene.is-zooming,
+  .zoom-overlay,
+  .story-section,
+  .scroll-cue {
+    transition-duration: 0.001s !important;
+    animation-duration: 0.001s !important;
+  }
+}
+
+/* ============================================================
+   Countdown Section — NEW
+   Paste this at the end of main.css. Does not alter any
+   existing rules, variables, or transition timings.
+   ============================================================ */
+
+/* Our Story section becomes the scroll-reveal trigger target;
+   this only adds a transform/opacity pair, it does not touch
+   .story-section's existing opacity transition or values. */
+.story-section {
+  will-change: transform, opacity;
+}
+
+.story-section.is-leaving {
+  transform: translateY(-40px);
+  opacity: 0.45;
+  transition:
+    transform 1.1s var(--ease-soft),
+    opacity 1.1s var(--ease-soft);
+}
+
+.countdown-section {
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    170deg,
+    var(--ivory) 0%,
+    var(--champagne) 55%,
+    var(--champagne-deep) 100%
+  );
+  padding: 10vh 6vw;
+  overflow: hidden;
+
+  opacity: 0;
+  transform: translateY(64px);
+  transition:
+    opacity 1.2s var(--ease-soft),
+    transform 1.2s var(--ease-soft);
+  will-change: transform, opacity;
+}
+
+.countdown-section.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.countdown-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+.countdown-heading {
+  margin: 0;
+  font-family: "Great Vibes", cursive;
+  font-weight: 400;
+  font-size: clamp(42px, 11vw, 60px);
+  color: var(--charcoal);
+  letter-spacing: 0.01em;
+}
+
+.countdown-subtitle {
+  margin: 6px 0 0;
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
+  font-size: 12px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--charcoal-soft);
+}
+
+.countdown-divider {
+  width: 74px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 26px 0 46px;
+}
+
+.countdown-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: center;
+  gap: clamp(12px, 3vw, 22px);
+  width: 100%;
+}
+
+.countdown-card {
+  flex: 1 1 120px;
+  min-width: 108px;
+  max-width: 160px;
+  padding: clamp(20px, 4vw, 28px) clamp(10px, 2.4vw, 18px);
+  background: var(--paper);
+  border: 1px solid var(--gold-line);
+  border-radius: 4px;
+  box-shadow:
+    0 18px 40px -20px rgba(44, 44, 44, 0.28),
+    0 2px 0 rgba(255, 255, 255, 0.5) inset;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.countdown-number {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 600;
+  font-size: clamp(32px, 8vw, 46px);
+  line-height: 1;
+  color: var(--charcoal);
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.countdown-label {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--charcoal-soft);
+}
+
+.countdown-complete {
+  display: none;
+  margin: 8px 0 0;
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(32px, 8vw, 44px);
+  color: var(--gold);
+  opacity: 0;
+  transition: opacity 1s var(--ease-soft);
+}
+
+.countdown-complete.is-visible {
+  display: block;
+  opacity: 1;
+}
+
+.countdown-grid.is-hidden {
+  display: none;
+}
+
+/* 2×2 grid on smaller viewports */
+@media (max-width: 560px) {
+  .countdown-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 340px;
+  }
+
+  .countdown-card {
+    max-width: none;
+    min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .countdown-section,
+  .story-section.is-leaving,
+  .countdown-complete {
+    transition-duration: 0.001s !important;
+    animation-duration: 0.001s !important;
+  }
+}
+
+/* ============================================================
+   Wedding Events Section — NEW
+   Paste this at the end of main.css. Does not alter any
+   existing rules, variables, or transition timings.
+   ============================================================ */
+
+/* Countdown section gains the same leave-transform pattern already
+   used by .story-section.is-leaving — added here, not overridden. */
+.countdown-section {
+  will-change: transform, opacity;
+}
+
+.countdown-section.is-leaving {
+  transform: translateY(0);
+  opacity: 0.45;
+  transition:
+    transform 1.1s var(--ease-soft),
+    opacity 1.1s var(--ease-soft);
+}
+
+.events-section {
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  min-height: 100vh;
+  background: linear-gradient(
+    170deg,
+    var(--champagne) 0%,
+    var(--ivory) 55%,
+    var(--champagne) 100%
+  );
+  padding: 12vh 6vw 14vh;
+  display: flex;
+  justify-content: center;
+
+  opacity: 0;
+  transform: translateY(64px);
+  transition:
+    opacity 1.2s var(--ease-soft),
+    transform 1.2s var(--ease-soft);
+  will-change: transform, opacity;
+}
+
+.events-section.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.events-inner {
+  width: 100%;
+  max-width: 880px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.events-heading {
+  margin: 0;
+  font-family: "Great Vibes", cursive;
+  font-weight: 400;
+  font-size: clamp(42px, 11vw, 60px);
+  color: var(--charcoal);
+  letter-spacing: 0.01em;
+}
+
+.events-subtitle {
+  margin: 6px 0 0;
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
+  font-size: 12px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--charcoal-soft);
+}
+
+.events-divider {
+  width: 74px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 26px 0 56px;
+}
+
+/* ---------------------------------------------------------- */
+/* Timeline                                                    */
+/* ---------------------------------------------------------- */
+
+.events-timeline {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+}
+
+/* central spine line (desktop) */
+.events-timeline::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    var(--gold-line) 8%,
+    var(--gold-line) 92%,
+    transparent
+  );
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+.event-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+
+  opacity: 0;
+  transform: translateY(30px);
+  transition:
+    opacity 0.9s var(--ease-soft),
+    transform 0.9s var(--ease-soft);
+  will-change: transform, opacity;
+}
+
+.event-item.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.event-icon {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  margin: 0 18px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 1px solid var(--gold-line);
+  color: var(--gold);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 14px -8px rgba(44, 44, 44, 0.35);
+}
+
+.event-card {
+  flex: 1 1 auto;
+  max-width: 380px;
+  text-align: left;
+  background: var(--paper);
+  border: 1px solid var(--gold-line);
+  border-radius: 6px;
+  padding: 20px 24px;
+  box-shadow:
+    0 18px 40px -22px rgba(44, 44, 44, 0.28),
+    0 2px 0 rgba(255, 255, 255, 0.5) inset;
+  transition:
+    transform 0.4s var(--ease-soft),
+    box-shadow 0.4s var(--ease-soft);
+}
+
+.event-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 12px;
+}
+
+.event-name {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 600;
+  font-size: clamp(19px, 4vw, 22px);
+  color: var(--charcoal);
+  letter-spacing: 0.01em;
+}
+
+.event-venue {
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--charcoal-soft);
+}
+
+.event-card-meta {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  color: var(--gold);
+}
+
+.event-meta-divider {
+  color: var(--gold-soft);
+}
+
+/* alternating left/right on desktop */
+@media (min-width: 760px) {
+  .event-item:nth-child(odd) {
+    justify-content: flex-start;
+  }
+  .event-item:nth-child(odd) .event-card {
+    order: 2;
+  }
+  .event-item:nth-child(odd) .event-icon {
+    order: 1;
+  }
+  .event-item:nth-child(odd)::after {
+    content: "";
+    order: 3;
+    flex: 1 1 auto;
+  }
+
+  .event-item:nth-child(even) {
+    justify-content: flex-end;
+  }
+  .event-item:nth-child(even)::before {
+    content: "";
+    order: 1;
+    flex: 1 1 auto;
+  }
+  .event-item:nth-child(even) .event-icon {
+    order: 2;
+  }
+  .event-item:nth-child(even) .event-card {
+    order: 3;
+  }
+}
+
+@media (hover: hover) {
+  .event-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 26px 50px -22px rgba(44, 44, 44, 0.34),
+      0 2px 0 rgba(255, 255, 255, 0.5) inset;
+  }
+}
+
+/* ---------------------------------------------------------- */
+/* Venue block                                                  */
+/* ---------------------------------------------------------- */
+
+.venue-block {
+  margin-top: 78px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  opacity: 0;
+  transform: translateY(30px);
+  transition:
+    opacity 1s var(--ease-soft),
+    transform 1s var(--ease-soft);
+  will-change: transform, opacity;
+}
+
+.venue-block.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.venue-divider {
+  width: 46px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin-bottom: 26px;
+}
+
+.venue-heading {
+  margin: 0;
+  font-family: "Great Vibes", cursive;
+  font-weight: 400;
+  font-size: clamp(34px, 8vw, 44px);
+  color: var(--charcoal);
+}
+
+.venue-name {
+  margin: 18px 0 0;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 600;
+  font-size: clamp(20px, 4.6vw, 24px);
+  color: var(--charcoal);
+}
+
+.venue-subname,
+.venue-place {
+  margin: 4px 0 0;
+  font-family: "Cormorant Garamond", serif;
+  font-style: italic;
+  font-size: 15px;
+  color: var(--charcoal-soft);
+}
+
+.venue-dates-label {
+  margin: 24px 0 0;
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
+  font-size: 10.5px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--charcoal-soft);
+}
+
+.venue-dates {
+  margin: 6px 0 0;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 600;
+  font-size: clamp(17px, 4.4vw, 19px);
+  letter-spacing: 0.04em;
+  color: var(--gold);
+}
+
+.venue-dates sup {
+  font-size: 0.6em;
+  letter-spacing: 0;
+}
+
+.venue-map-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.venue-map-placeholder {
+  position: relative;
+
+  display: block;
+
+  overflow: hidden;
+
+  cursor: pointer;
+
+  text-decoration: none;
+}
+
+.venue-map-overlay {
+  position: absolute;
+
+  inset: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background: rgba(0, 0, 0, 0.25);
+
+  color: white;
+
+  font-family: "Poppins", sans-serif;
+
+  letter-spacing: 0.15em;
+
+  opacity: 0;
+
+  transition: 0.35s;
+}
+.venue-map-placeholder:hover .venue-map-overlay {
+  opacity: 1;
+}
+
+.venue-map-image {
+  transition: 0.4s;
+}
+
+.venue-map-placeholder:hover .venue-map-image {
+  transform: scale(1.04);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .events-section,
+  .countdown-section.is-leaving,
+  .event-item,
+  .venue-block,
+  .event-card {
+    transition-duration: 0.001s !important;
+    animation-duration: 0.001s !important;
+  }
+}
+
+/* ============================================================
+   Gallery Section — NEW
+   Paste this at the end of main.css. Does not alter any
+   existing rules, variables, or transition timings.
+   ============================================================ */
+
+/* Venue block gains the same leave-transform pattern already used
+   by .story-section.is-leaving / .countdown-section.is-leaving. */
+.venue-block {
+  will-change: transform, opacity;
+}
+
+.venue-block.is-leaving {
+  transform: translateY(-40px);
+  opacity: 0.45;
+  transition:
+    transform 1.1s var(--ease-soft),
+    opacity 1.1s var(--ease-soft);
+}
+
+.gallery-section {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(
+    170deg,
+    var(--ivory) 0%,
+    var(--champagne) 50%,
+    var(--ivory) 100%
+  );
+  padding: 12vh 6vw 14vh;
+  display: flex;
+  justify-content: center;
+
+  opacity: 0;
+  transform: translateY(64px);
+  transition:
+    opacity 1.2s var(--ease-soft),
+    transform 1.2s var(--ease-soft);
+  will-change: transform, opacity;
+}
+
+.gallery-section.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.gallery-inner {
+  width: 100%;
+  max-width: 1080px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.gallery-heading {
+  margin: 0;
+  font-family: "Great Vibes", cursive;
+  font-weight: 400;
+  font-size: clamp(42px, 11vw, 60px);
+  color: var(--charcoal);
+  letter-spacing: 0.01em;
+}
+
+.gallery-subtitle {
+  margin: 6px 0 0;
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
+  font-size: 12px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--charcoal-soft);
+}
+
+.gallery-divider {
+  width: 74px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 26px 0 52px;
+}
+
+/* ---------------------------------------------------------- */
+/* Masonry-style grid                                           */
+/* ---------------------------------------------------------- */
+
+.gallery-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 130px;
+  grid-auto-flow: dense;
+  gap: clamp(12px, 2.4vw, 20px);
+}
+
+.gallery-item {
+  position: relative;
+  grid-row: span 1;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  border-radius: 8px;
+  overflow: hidden;
+  background: none;
+  font: inherit;
+
+  opacity: 0;
+  transform: translateY(30px);
+  transition:
+    opacity 0.9s var(--ease-soft),
+    transform 0.9s var(--ease-soft),
+    box-shadow 0.4s var(--ease-soft);
+  will-change: transform, opacity;
+}
+
+.gallery-item.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* featured image: spans two rows, sits in the first column */
+.gallery-item-feature {
+  grid-row: span 2;
+  grid-column: 1;
+}
+
+.gallery-item-tall {
+  grid-row: span 2;
+}
+
+.gallery-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--champagne-deep);
+  background: linear-gradient(
+    155deg,
+    var(--champagne) 0%,
+    var(--paper) 55%,
+    var(--champagne-deep) 100%
+  );
+  box-shadow:
+    0 16px 34px -20px rgba(44, 44, 44, 0.28),
+    0 2px 0 rgba(255, 255, 255, 0.5) inset;
+  transition:
+    transform 0.5s var(--ease-soft),
+    box-shadow 0.5s var(--ease-soft),
+    border-color 0.5s var(--ease-soft);
+}
+
+.gallery-placeholder-label {
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
+  font-size: 11px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--charcoal-soft);
+  opacity: 0.55;
+}
+
+@media (hover: hover) {
+  .gallery-item:hover .gallery-placeholder {
+    transform: scale(1.04);
+    box-shadow:
+      0 26px 54px -22px rgba(44, 44, 44, 0.32),
+      0 0 0 3px rgba(200, 169, 106, 0.35);
+    border-color: var(--gold);
+  }
+}
+
+.gallery-item:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .gallery-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: 220px;
+  }
+
+  .gallery-item-feature,
+  .gallery-item-tall {
+    grid-row: span 1;
+    grid-column: auto;
+  }
+}
+
+/* ---------------------------------------------------------- */
+/* Lightbox                                                     */
+/* ---------------------------------------------------------- */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.5s var(--ease-soft),
+    visibility 0s linear 0.5s;
+}
+
+.lightbox.is-open {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 0.5s var(--ease-soft),
+    visibility 0s linear 0s;
+}
+
+.lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 16, 10, 0.86);
+}
+
+.lightbox-stage {
+  position: relative;
+  z-index: 1;
+  width: min(78vw, 640px);
+  height: min(78vw, 640px);
+  max-height: 78vh;
+  transform: scale(0.96);
+  transition: transform 0.5s var(--ease-soft);
+}
+
+.lightbox.is-open .lightbox-stage {
+  transform: scale(1);
+}
+
+.lightbox-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  border: 1px solid var(--gold-line);
+  background: linear-gradient(
+    155deg,
+    var(--champagne) 0%,
+    var(--paper) 55%,
+    var(--champagne-deep) 100%
+  );
+  box-shadow: 0 30px 70px -24px rgba(0, 0, 0, 0.55);
+}
+
+.lightbox-placeholder .gallery-placeholder-label {
+  color: var(--charcoal);
+  opacity: 0.6;
+  font-size: 13px;
+}
+
+.lightbox-close,
+.lightbox-nav {
+  position: absolute;
+  z-index: 2;
+  background: rgba(250, 248, 244, 0.1);
+  border: 1px solid rgba(217, 192, 147, 0.5);
+  color: var(--paper);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.3s ease,
+    transform 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.lightbox-close:hover,
+.lightbox-nav:hover {
+  background: rgba(200, 169, 106, 0.25);
+  border-color: var(--gold);
+}
+
+.lightbox-close {
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.lightbox-nav {
+  top: 50%;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  font-size: 26px;
+  line-height: 1;
+}
+
+.lightbox-nav:hover {
+  transform: translateY(-50%) scale(1.06);
+}
+
+.lightbox-prev {
+  left: clamp(10px, 4vw, 40px);
+}
+
+.lightbox-next {
+  right: clamp(10px, 4vw, 40px);
+}
+.gallery-placeholder img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: inherit;
+}
+.gallery-item {
+  overflow: hidden;
+}
+.gallery-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+@media (max-width: 560px) {
+  .lightbox-stage {
+    width: 86vw;
+    height: 86vw;
+    max-height: 60vh;
+  }
+
+  .lightbox-nav {
+    width: 40px;
+    height: 40px;
+    font-size: 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery-section,
+  .venue-block.is-leaving,
+  .gallery-item,
+  .gallery-placeholder,
+  .lightbox,
+  .lightbox-stage {
+    transition-duration: 0.001s !important;
+    animation-duration: 0.001s !important;
+  }
+}
